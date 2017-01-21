@@ -16,15 +16,22 @@ public enum NOTE
     As,
     B
 }
+
+public struct NoteData
+{
+    public NOTE note;
+    public float frequency;
+    public int midi;
+}
 public class AudioInput : MonoBehaviour
 {
-    public delegate void NoteStart(NOTE note);
+    public delegate void NoteStart(NoteData note);
     public static event NoteStart OnNoteStart;
 
-    public delegate void NoteEnd(NOTE note);
+    public delegate void NoteEnd(NoteData note);
     public static event NoteEnd OnNoteEnd;
 
-    public delegate void NoteChange(NOTE note);
+    public delegate void NoteChange(NoteData note);
     public static event NoteChange OnNoteChange;
 
     public int fftSampleCount;
@@ -40,6 +47,8 @@ public class AudioInput : MonoBehaviour
     bool m_hasDevice = false;
     public float volumeThreshold;
     public float averageVolumeThreshold;
+
+    float[] m_midiFreq;
 
     public float m_lastVolume = 0;
     public NOTE m_lastNote = NOTE.C;
@@ -58,7 +67,21 @@ public class AudioInput : MonoBehaviour
         }
 
        
-	}
+        m_midiFreq = new float[127];
+        float a = 440; 
+        for (int i = 0; i < 127; ++i)
+        {
+            float f = i - 69;
+            m_midiFreq[i] = Mathf.Pow(2.0f, (f / 12.0f)) * a;
+        }
+    }
+
+    public float mtof(int midi)
+    {
+        if (midi < 0 || midi >= 127) return 0.0f;
+       
+        return m_midiFreq[midi];
+    }
 
     int ftom(float frequency)
     {
@@ -75,8 +98,15 @@ public class AudioInput : MonoBehaviour
             m_volumeBuffer = new float[256];
             m_source.clip = Microphone.Start(m_device, true, 999, (m_sampleRate));
             m_source.loop = true; // Set the AudioClip to loop
+            while (!(Microphone.GetPosition(m_device) > 0)) { } // Wait until the recording has started
             m_source.Play(); // Play the audio source!
         }
+    }
+
+    IEnumerator lateStart()
+    {
+        yield return new WaitForSeconds(0.2f);
+        m_source.Play();
     }
 
     public NOTE midiToNote(int midi)
@@ -99,7 +129,8 @@ public class AudioInput : MonoBehaviour
     float fundamental()
     {
         if (!m_hasDevice) return 0.0f;
-        m_source.GetSpectrumData(m_buffer, 0, FFTWindow.Hanning);
+        
+        m_source.GetSpectrumData(m_buffer, 0, FFTWindow.BlackmanHarris);
         float loudest = 0.0f;
         int index = 0;
         for(int i = 1; i<m_buffer.Length;i++)
@@ -132,20 +163,25 @@ public class AudioInput : MonoBehaviour
         int midi = ftom(fundamentalFreq);
         NOTE note = midiToNote(midi);
         float volume = getVolume();
-        if(volume > averageVolumeThreshold) Debug.Log("midi note = " + midi + ", note = " + note);
+        if ((int)note < 0) volume = 0;
+        NoteData noteData = new NoteData();
+        noteData.note = note;
+        noteData.midi = midi;
+        
+        noteData.frequency = mtof(midi);
         if(m_lastVolume >= averageVolumeThreshold && volume < averageVolumeThreshold)
         {
-            if (OnNoteEnd != null) OnNoteEnd(note);
+            if (OnNoteEnd != null) OnNoteEnd(noteData);
         }
         else if (m_lastVolume <= averageVolumeThreshold && volume > averageVolumeThreshold)
         {
-            if (OnNoteStart != null) OnNoteStart(note);
+            if (OnNoteStart != null) OnNoteStart(noteData);
         }
         else if(volume > averageVolumeThreshold && m_lastVolume > averageVolumeThreshold)
         {
             if(m_lastNote != note)
             {
-                OnNoteChange(note);
+                if(OnNoteChange != null) OnNoteChange(noteData);
             }
         }
         

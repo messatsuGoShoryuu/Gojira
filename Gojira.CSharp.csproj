@@ -72,7 +72,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\AudioEnvelope.cs" />
     <Compile Include="Assets\AudioInput.cs" />
+    <Compile Include="Assets\DamageZone.cs" />
+    <Compile Include="Assets\Enemy.cs" />
+    <Compile Include="Assets\GuitarPlayer.cs" />
+    <Compile Include="Assets\HealthDisplayer.cs" />
+    <Compile Include="Assets\JammedDisplayer.cs" />
+    <Compile Include="Assets\NoteDisplayer.cs" />
+    <Compile Include="Assets\NoteSpawner.cs" />
+    <Compile Include="Assets\Ship.cs" />
+    <Compile Include="Assets\Shred.cs" />
+    <Compile Include="Assets\SpawnScheduler.cs" />
+    <Compile Include="Assets\Synth.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
