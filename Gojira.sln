@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gojira.CSharp", "Gojira.CSharp.csproj", "{DA68F406-2832-BDE0-0039-E0835D91A729}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA68F406-2832-BDE0-0039-E0835D91A729}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA68F406-2832-BDE0-0039-E0835D91A729}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA68F406-2832-BDE0-0039-E0835D91A729}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA68F406-2832-BDE0-0039-E0835D91A729}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
